@@ -1,0 +1,203 @@
+/* Paper for the words, a black stage for every object. */
+:root {
+  --paper: #f7f6f3;
+  --paper-deep: #edebe6;
+  --ink: #232323;
+  --ink-soft: #5c5c5c;
+  --ink-faint: #a6a6a6;
+  --hairline: rgba(35, 35, 35, 0.08);
+  --hairline-strong: rgba(35, 35, 35, 0.14);
+  --stage: #000000;
+  --stage-ink: #ebe6db;
+  --stage-ink-soft: rgba(236, 241, 255, 0.62);
+  --stage-hairline: rgba(236, 241, 255, 0.08);
+  --sans: "Montserrat", Geist, Inter, system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: clamp(16px, 3.4vw, 64px);
+  --w-board: 1160px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 300 1rem/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+}
+h1, h2, p { margin: 0; }
+h1, h2 { text-wrap: balance; }
+p { text-wrap: pretty; }
+a { color: inherit; text-decoration: none; transition: color 150ms var(--ease); }
+a:hover { color: var(--ink-soft); }
+
+/* Blueprint frame: two margin rules the length of the page. */
+body::before, body::after {
+  content: "";
+  position: fixed;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: var(--hairline);
+  pointer-events: none;
+}
+body::before { left: var(--gutter); }
+body::after { right: var(--gutter); }
+
+.mono-label {
+  font: 400 0.6875rem/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Letterhead row. */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 20px var(--gutter);
+  border-bottom: 1px solid var(--hairline);
+  font: 400 0.6875rem/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.meta nav { display: flex; gap: 20px; flex-wrap: wrap; justify-content: flex-end; }
+.meta nav a[aria-current="page"] { font-style: italic; color: var(--ink); }
+footer.meta { border-top: 1px solid var(--hairline); border-bottom: 0; }
+
+.intro {
+  padding: clamp(56px, 9vw, 140px) var(--gutter) clamp(40px, 6vw, 96px);
+  display: grid;
+  gap: 20px;
+  max-width: var(--w-board);
+  margin: 0 auto;
+}
+.intro h1 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+.intro .lede {
+  font-size: clamp(1.125rem, 1.6vw, 1.3rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink-soft);
+  max-width: 640px;
+}
+
+/* The board: plates stacked, sharing borders. */
+.board {
+  max-width: var(--w-board);
+  margin: 0 auto;
+  border-top: 1px solid var(--hairline);
+  border-left: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
+  position: relative;
+}
+.board::before, .board::after {
+  /* Registration ticks. */
+  content: "";
+  position: absolute;
+  top: -2px;
+  width: 4px; height: 4px;
+  background: var(--ink);
+}
+.board::before { left: -2px; }
+.board::after { right: -2px; }
+
+/* A plate: caption row, then a full-width stage. */
+.plate { margin: 0; border-bottom: 1px solid var(--hairline); }
+.plate figcaption {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+.plate .head {
+  padding: 24px 28px;
+  border-right: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.plate .note {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.plate h2 {
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.plate .note p { color: var(--ink-soft); font-size: 0.9375rem; max-width: 56ch; }
+
+.stage {
+  position: relative;
+  background: var(--stage);
+  border-top: 1px solid var(--hairline);
+  min-height: clamp(360px, 62vh, 720px);
+}
+.stage canvas, .cell canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  font-family: var(--mono);
+}
+.stage .tag, .cell .tag {
+  position: absolute;
+  left: 12px; bottom: 10px;
+  color: var(--stage-ink-soft);
+  pointer-events: none;
+}
+
+/* The glyph ramp as a figure in type. */
+.ramp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+.ramp code {
+  white-space: nowrap;
+  font: 600 1.25rem/1 var(--mono);
+  letter-spacing: 0.2em;
+  color: var(--ink);
+}
+
+/* Species cells: one shark each, hairlines between them whatever the column count. */
+.stage.cells {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--stage-hairline);
+  min-height: 0;
+}
+.cells .cell {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  background: var(--stage);
+}
+
+@media (max-width: 720px) {
+  .plate figcaption { grid-template-columns: 1fr; }
+  .plate .head { border-right: 0; padding-bottom: 0; }
+  .stage { min-height: clamp(300px, 70vh, 520px); }
+  .stage.cells { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

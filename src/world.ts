@@ -18,7 +18,7 @@ import { pickSpecies, SPECIES } from "./species";
 
 export const SHARK_NODES = 20;
 
-export type SharkKind = "classic" | "hammerhead" | "zebra" | "tiger" | "greathammer" | "mako" | "thresher" | "nurse";
+export type SharkKind = "classic" | "hammerhead" | "zebra" | "tiger" | "greathammer" | "mako" | "thresher" | "nurse" | "whale";
 
 /** Which sharks to put in the water; size is relative to the biggest. */
 export type SharkSpec = { kind: SharkKind; size: number };
@@ -108,11 +108,45 @@ export class World {
   private lastSpawn = 0;
   private tmp = { x: 0, y: 0 };
 
-  /** fishCount overrides the area-based population (the sidebar wants a single small school). */
+  /**
+   * fishCount overrides the area-based population (the sidebar wants a single small school).
+   * clearCentre keeps a soft ellipse in the middle free for a headline; off for a plain tank.
+   * contain keeps every shark wholly in frame instead of letting bodies dip off the edges.
+   */
   constructor(
     private sharkSpecs: SharkSpec[] = DEFAULT_SHARKS,
     private fishCount?: number,
+    private clearCentre = true,
+    private contain = false,
   ) {}
+
+  /** How far every part of a contained shark keeps from the frame: fins and tail lobes reach about this far out. */
+  private insetFor(length: number) {
+    return length * 0.3;
+  }
+
+  /** Slide a spine so none of it lies within `inset` of the frame. */
+  private fitInFrame(nodes: Float32Array, inset: number) {
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (let k = 0; k < SHARK_NODES; k++) {
+      const x = nodes[k * 2];
+      const y = nodes[k * 2 + 1];
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    const sx = minX < inset ? inset - minX : maxX > this.width - inset ? this.width - inset - maxX : 0;
+    const sy = minY < inset ? inset - minY : maxY > this.height - inset ? this.height - inset - maxY : 0;
+    if (sx === 0 && sy === 0) return;
+    for (let k = 0; k < SHARK_NODES; k++) {
+      nodes[k * 2] += sx;
+      nodes[k * 2 + 1] += sy;
+    }
+  }
 
   resize(width: number, height: number, cellW: number, cellH: number) {
     const first = this.width === 0;
@@ -144,7 +178,11 @@ export class World {
     for (let i = 0; i < sharkCount; i++) {
       const { kind, size } = this.sharkSpecs[i];
       const length = baseLength * size;
-      const orbitRadius = minSide * rand(0.28, 0.4);
+      const inset = this.insetFor(length);
+      // Contained sharks orbit inside the inset, so the circuit itself never asks them to leave.
+      const orbitRadius = this.contain
+        ? Math.max(minSide * 0.1, Math.min(minSide * rand(0.28, 0.4), H / 2 - inset - length * 0.1, (W / 2 - inset) / ((W / minSide) * 0.9)))
+        : minSide * rand(0.28, 0.4);
       const a = (i / sharkCount) * TAU + rand(-0.4, 0.4);
       const orbitDir: 1 | -1 = i % 2 === 0 ? 1 : -1;
       const x = W / 2 + Math.cos(a) * orbitRadius * (W / minSide) * 0.9;
@@ -156,6 +194,7 @@ export class World {
         nodes[n * 2] = x - Math.cos(heading) * seg * n;
         nodes[n * 2 + 1] = y - Math.sin(heading) * seg * n;
       }
+      if (this.contain) this.fitInFrame(nodes, inset);
       this.sharks.push({
         id: i + 1,
         kind,
@@ -171,7 +210,7 @@ export class World {
         orbitRadius,
         target: null,
         retargetAt: 0,
-        depth: size,
+        depth: clamp(size, 0, 1),
       });
     }
     // Smaller (farther) sharks draw first so the big one swims over them.
@@ -528,23 +567,58 @@ export class World {
       const ex = (hx - cxW) / (W * 0.3);
       const ey = (hy - cyW) / (H * 0.16);
       const e2 = ex * ex + ey * ey;
-      if (e2 < 1) {
+      if (this.clearCentre && e2 < 1) {
         const e = Math.sqrt(e2) || 1e-3;
         const w = (1 - e) * (hunting ? 1 : 2.5);
         dx += (ex / e) * w;
         dy += (ey / e) * w;
       }
 
-      // Turn back once the snout leaves the frame, so bodies dip off-screen
-      // now and then but the sharks never wander away for good.
-      const over = Math.max(-hx, hx - W, -hy, hy - H);
-      if (over > -L * 0.05) {
-        const w = clamp((over + L * 0.05) / (L * 0.35), 0, 1) * 3.5;
-        const toX = cxW - hx;
-        const toY = cyW - hy;
-        const d = Math.hypot(toX, toY) || 1;
-        dx += (toX / d) * w;
-        dy += (toY / d) * w;
+      const inset = this.insetFor(L);
+      if (this.contain) {
+        // Containment: the whole animal stays in frame. The body swings wide of the snout's path
+        // when the shark turns, so the distance to each wall is taken from whichever part of the
+        // spine is nearest it; steering away from the wall draws the body after the snout, harder
+        // the closer it gets, until the wall overrides the hunt.
+        const band = L * 0.65;
+        let minX = hx;
+        let maxX = hx;
+        let minY = hy;
+        let maxY = hy;
+        for (let k = 1; k < SHARK_NODES; k++) {
+          const x = nodes[k * 2];
+          const y = nodes[k * 2 + 1];
+          if (x < minX) minX = x;
+          else if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          else if (y > maxY) maxY = y;
+        }
+        let px = 0;
+        let py = 0;
+        if (minX - inset < band) px += 1 - (minX - inset) / band;
+        if (W - inset - maxX < band) px -= 1 - (W - inset - maxX) / band;
+        if (minY - inset < band) py += 1 - (minY - inset) / band;
+        if (H - inset - maxY < band) py -= 1 - (H - inset - maxY) / band;
+        const m = Math.hypot(px, py);
+        if (m > 1e-3) {
+          // Ease in fast: most of the push arrives in the outer half of the band, so the turn
+          // is made well before the line and the line itself is rarely touched.
+          const w = Math.sqrt(Math.min(1, m)) * 8;
+          dx += (px / m) * w;
+          dy += (py / m) * w;
+        }
+      } else {
+        // Turn back once the snout leaves the frame, so bodies dip off-screen
+        // now and then but the sharks never wander away for good.
+        const over = Math.max(-hx, hx - W, -hy, hy - H);
+        if (over > -L * 0.05) {
+          const w = clamp((over + L * 0.05) / (L * 0.35), 0, 1) * 3.5;
+          const toX = cxW - hx;
+          const toY = cyW - hy;
+          const d = Math.hypot(toX, toY) || 1;
+          dx += (toX / d) * w;
+          dy += (toY / d) * w;
+        }
       }
 
       const desired = Math.atan2(dy, dx);
@@ -562,6 +636,11 @@ export class World {
 
       nodes[0] += Math.cos(sh.heading) * sh.speed * dt;
       nodes[1] += Math.sin(sh.heading) * sh.speed * dt;
+      if (this.contain) {
+        // The line itself, should steering not have been enough.
+        nodes[0] = clamp(nodes[0], inset, W - inset);
+        nodes[1] = clamp(nodes[1], inset, H - inset);
+      }
 
       // Follow-the-leader spine, with a stiffness limit per joint so the
       // body bends into a C at most and never folds back on itself.
@@ -577,6 +656,8 @@ export class World {
         nodes[k * 2 + 1] = py + Math.sin(angle) * seg;
         prevAngle = angle;
       }
+      // Last resort for a tail that swings past the line: slide the whole body in.
+      if (this.contain) this.fitInFrame(nodes, inset);
 
       // Feed.
       if (sh.hunger > 0.15) {
@@ -606,12 +687,15 @@ export class World {
     const hy = sh.nodes[1];
     const fx = Math.cos(sh.heading);
     const fy = Math.sin(sh.heading);
+    const inset = this.contain ? this.insetFor(sh.length) : 0;
     let best: Fish | null = null;
     let bestScore = Infinity;
     let currentScore = Infinity;
 
     for (const f of this.fish) {
       if (!f.alive) continue;
+      // A contained shark can't reach fish hugging the frame; don't let them pin it to the wall.
+      if (inset && (f.x < inset || f.x > this.width - inset || f.y < inset || f.y > this.height - inset)) continue;
       const dx = f.x - hx;
       const dy = f.y - hy;
       const d = Math.hypot(dx, dy);

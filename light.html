@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ascii sharks · light</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@600&display=swap" rel="stylesheet" />
+    <style>
+      html, body { margin: 0; height: 100%; background: #f7f6f3; }
+      canvas { display: block; width: 100vw; height: 100vh; font-family: "Geist Mono", ui-monospace, Menlo, monospace; }
+      /* Calm pool in the middle, as on the chat screen, so a prompt would read over the water. */
+      .pool { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse 42% 32% at 50% 50%, rgba(247,246,243,0.9) 0%, rgba(247,246,243,0.5) 55%, transparent 100%); }
+    </style>
+  </head>
+  <body>
+    <canvas aria-hidden="true"></canvas>
+    <div class="pool" aria-hidden="true"></div>
+    <script type="module" src="/pages/light.ts"></script>
+  </body>
+</html>

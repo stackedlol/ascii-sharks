@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ascii sharks · blueprints</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/pages/style.css" />
+  </head>
+  <body>
+    <header class="meta">
+      <span>ascii sharks · blueprints · 10 fig.</span>
+      <nav>
+        <a href="/">Index</a>
+        <a href="/light">Light</a>
+        <a href="/dark">Dark</a>
+        <a href="/blueprints" aria-current="page">Blueprints</a>
+      </nav>
+    </header>
+    <section class="intro">
+      <span class="mono-label">Blueprints</span>
+      <h1>From Life to sharks.</h1>
+      <p class="lede">Ten frames on the same grid, from Conway's rules to a hunting shark.</p>
+    </section>
+    <main class="board">
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 01 · Life · 1970</span>
+            <h2>Three rules.</h2>
+          </div>
+          <div class="note">
+            <p>A cell lives with two or three neighbours and is born with three. Nothing else. Movers stay bright. Still lifes fade to ash.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="life" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="life">Fig. 01 · Life · 1970</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 02 · Field</span>
+            <h2>Each cell asks its neighbours.</h2>
+          </div>
+          <div class="note">
+            <p>The same grid under a continuous rule: average your four neighbours, then fade. Draw on it.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="field" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="field">Fig. 02 · Field</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 03 · Agents · 1987</span>
+            <h2>Three rules, no leader.</h2>
+          </div>
+          <div class="note">
+            <p>Rules move from cells to animals. Keep your distance. Match your neighbours. Drift to the centre. Species differ only in the weights: sardines mill, anchovies ribbon.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="agents" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="agents">Fig. 03 · Agents · 1987</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 04 · Spine</span>
+            <h2>Twenty points.</h2>
+          </div>
+          <div class="note">
+            <p>Only the snout is steered. Each point follows the one ahead, with a stiffness limit per joint so the body bends into a C and never folds.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="spine" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="spine">Fig. 04 · Spine</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 05 · Silhouette</span>
+            <h2>A curve and four triangles.</h2>
+          </div>
+          <div class="note">
+            <p>Half-width along the spine, triangles for the fins. Five samples per cell decide skin or edge, so the outline is anti-aliased with punctuation.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="silhouette" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="silhouette">Fig. 05 · Silhouette</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 06 · Shade</span>
+            <h2>Lit from the top left.</h2>
+          </div>
+          <div class="note">
+            <p>A rounded back. Flanks fall into shadow. The dorsal catches the light.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="shaded" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="shaded">Fig. 06 · Shade</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 07 · Glyphs</span>
+            <h2>Density is light.</h2>
+          </div>
+          <div class="note">
+            <p>Each block gets a character from the ramp. Sparse where lit, dense in shadow, so texture agrees with the light.</p>
+            <div class="ramp" aria-label="Glyph ramp from light to shadow">
+              <span class="mono-label">Light</span>
+              <code>: ; t % S X 8 # @</code>
+              <span class="mono-label">Shadow</span>
+            </div>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="glyphs" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="glyphs">Fig. 07 · Glyphs</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 08 · Species</span>
+            <h2>Nine curves.</h2>
+          </div>
+          <div class="note">
+            <p>Species differ only in the half-width curve, fin layout, head, markings and tint.</p>
+          </div>
+        </figcaption>
+        <div class="stage cells">
+          <div class="cell"><canvas data-fig="species-classic" aria-hidden="true"></canvas><span class="mono-label tag">classic</span></div>
+          <div class="cell"><canvas data-fig="species-hammerhead" aria-hidden="true"></canvas><span class="mono-label tag">hammerhead</span></div>
+          <div class="cell"><canvas data-fig="species-greathammer" aria-hidden="true"></canvas><span class="mono-label tag">great hammerhead</span></div>
+          <div class="cell"><canvas data-fig="species-tiger" aria-hidden="true"></canvas><span class="mono-label tag">tiger</span></div>
+          <div class="cell"><canvas data-fig="species-zebra" aria-hidden="true"></canvas><span class="mono-label tag">zebra</span></div>
+          <div class="cell"><canvas data-fig="species-mako" aria-hidden="true"></canvas><span class="mono-label tag">mako</span></div>
+          <div class="cell"><canvas data-fig="species-thresher" aria-hidden="true"></canvas><span class="mono-label tag">thresher</span></div>
+          <div class="cell"><canvas data-fig="species-nurse" aria-hidden="true"></canvas><span class="mono-label tag">nurse</span></div>
+          <div class="cell"><canvas data-fig="species-whale" aria-hidden="true"></canvas><span class="mono-label tag">whale shark</span></div>
+        </div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 09 · Hunger</span>
+            <h2>The straggler gets taken.</h2>
+          </div>
+          <div class="note">
+            <p>A shark scores every fish in its forward cone by distance and by how crowded its neighbourhood is, then takes the sparse one. Eaten fish return as a new school from the edge.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="hunger" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="hunger">Fig. 09 · Hunger</span></div>
+      </figure>
+      <figure class="plate">
+        <figcaption>
+          <div class="head">
+            <span class="mono-label">Fig. 10 · Life, then sharks</span>
+            <h2>Same water.</h2>
+          </div>
+          <div class="note">
+            <p>Life runs on the board. The sharks fade in, their bodies clear cells, and their wake seeds new ones. The continuous automaton feeds the discrete one.</p>
+          </div>
+        </figcaption>
+        <div class="stage"><canvas data-fig="bleed" aria-hidden="true"></canvas><span class="mono-label tag" data-tag="bleed">Fig. 10 · Life, then sharks</span></div>
+      </figure>
+    </main>
+    <footer class="meta">
+      <span>MIT · zero dependencies</span>
+      <nav><a href="https://github.com/stackedlol/ascii-sharks">Source</a></nav>
+    </footer>
+    <script type="module" src="/pages/blueprints.ts"></script>
+  </body>
+</html>

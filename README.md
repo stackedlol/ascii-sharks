@@ -30,6 +30,22 @@ npm install && npm run dev
 import { OceanEngine } from "./src";
 
 const engine = new OceanEngine(canvas, [{ kind: "hammerhead", size: 1 }]);
+
+// Options: fish count (0 = sharks only), "dark" | "light" theme, a drawing stage
+// ("spine" | "silhouette" | "shaded" | "full"), pointer on/off, a single still frame,
+// and contain: true to keep every shark wholly inside the canvas.
+new OceanEngine(canvas, undefined, { theme: "light", fish: 0, pointer: false, still: true });
 ```
+
+Routes:
+
+```
+/            the demo
+/light       the chat hero scene, on paper
+/dark        the chat hero scene, on black
+/blueprints  ten frames on one grid, from Conway's Life to the sharks
+```
+
+`?sharks=whale,hammerhead,mako,nurse` picks the cast on any shark page, `?all` puts every species in, and `?still=1` draws one settled frame.
 
 MIT

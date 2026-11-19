@@ -1,0 +1,4 @@
+{
+  "cleanUrls": true,
+  "redirects": [{ "source": "/concepts", "destination": "/blueprints", "permanent": true }]
+}
